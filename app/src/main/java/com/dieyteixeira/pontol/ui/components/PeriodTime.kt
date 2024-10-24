@@ -3,6 +3,7 @@ package com.dieyteixeira.pontol.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,136 +17,132 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.pontol.R
-import com.dieyteixeira.pontol.ui.theme.Amarelo1
 import com.dieyteixeira.pontol.ui.theme.Azul1
+import com.dieyteixeira.pontol.ui.theme.Azul2
 import com.dieyteixeira.pontol.ui.theme.AzulDegrade
+import com.dieyteixeira.pontol.ui.theme.Verde
 
 @Composable
 fun PeriodTime(
-    icon: Painter,
-    colorIcon: Color,
-    colorText: Color,
+    text: String,
     initialTime: String,
     finalTime: String,
     onInitialTimeClick: () -> Unit,
     onFinalTimeClick: () -> Unit
 ) {
+
+    val isInPreview = LocalInspectionMode.current
+    val customFontFamily = if (isInPreview) {
+        FontFamily.Default
+    } else {
+        FontFamily(Font(R.font.font_aller))
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp)
-            .background(
-                color = Color.White.copy(alpha = 0.8f),
-                shape = RoundedCornerShape(15.dp)
-            )
-            .padding(10.dp),
+            .height(60.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.ic_double_arrow_left),
+                    contentDescription = null,
                     modifier = Modifier
-                        .width(40.dp)
-                        .background(
-                            color = colorText,
-                            shape = RoundedCornerShape(15.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = icon,
-                        contentDescription = "Logo",
-                        colorFilter = tint(colorIcon),
-                        modifier = Modifier
-                            .size(100.dp)
-                            .rotate(-90f)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(5.dp))
-            Column(
-                modifier = Modifier
-                    .weight(3f)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Hora Inicial",
-                    fontSize = 14.sp,
-                    color = Color.Black
+                        .size(25.dp)
                 )
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(40.dp)
-                        .padding(top = 5.dp)
-                        .background(Color.White, RoundedCornerShape(100))
-                        .clickable(onClick = onInitialTimeClick),
+                        .width(70.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (initialTime.isEmpty()) "00h 00min" else initialTime,
-                        color = Color.Gray,
+                        text = text,
+                        color = Azul1,
                         style = TextStyle(fontSize = 18.sp),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        fontFamily = customFontFamily,
+                        textAlign = TextAlign.Center
                     )
                 }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_double_arrow_right),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                )
             }
-            Column(
+            Box(
                 modifier = Modifier
-                    .weight(3f)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(end = 230.dp)
+                    .height(35.dp)
+                    .width(125.dp)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(100)
+                    )
+                    .clickable(
+                        onClick = onInitialTimeClick,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Hora Final",
-                    fontSize = 14.sp,
-                    color = Color.Black
+                    text = if (initialTime.isEmpty()) "--" else initialTime,
+                    color = Azul2,
+                    style = TextStyle(fontSize = 18.sp),
+                    fontFamily = customFontFamily,
+                    textAlign = TextAlign.Center
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(40.dp)
-                        .padding(top = 5.dp)
-                        .background(Color.White, RoundedCornerShape(100))
-                        .clickable(onClick = onFinalTimeClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (finalTime.isEmpty()) "00h 00min" else finalTime,
-                        color = Color.Gray,
-                        style = TextStyle(fontSize = 18.sp),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 230.dp)
+                    .height(35.dp)
+                    .width(125.dp)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(100)
                     )
-                }
+                    .clickable(
+                        onClick = onFinalTimeClick,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (finalTime.isEmpty()) "--" else finalTime,
+                    color = Azul2,
+                    style = TextStyle(fontSize = 18.sp),
+                    fontFamily = customFontFamily,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -156,14 +153,12 @@ fun PeriodTime(
 private fun PeriodTimePreview() {
     Column(
         modifier = Modifier
-            .height(120.dp)
+            .height(60.dp)
             .background(AzulDegrade),
         verticalArrangement = Arrangement.Center
     ) {
         PeriodTime(
-            icon = painterResource(id = R.drawable.txt_manha),
-            colorIcon = Color.White,
-            colorText = Azul1,
+            text = "MANHÃ",
             initialTime = "08h 00min",
             finalTime = "12h 00min",
             onInitialTimeClick = {},
