@@ -1,6 +1,8 @@
 package com.dieyteixeira.pontol.ui.screen
 
+import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,45 +34,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dieyteixeira.pontol.R
-import com.dieyteixeira.pontol.ui.components.DatePickerPonto
+import com.dieyteixeira.pontol.ui.components.DatePickerCustom
 import com.dieyteixeira.pontol.ui.components.PeriodTime
-import com.dieyteixeira.pontol.ui.components.TimePickerPonto
+import com.dieyteixeira.pontol.ui.components.TimePickerCustom
 import com.dieyteixeira.pontol.ui.components.formattedTime
 import com.dieyteixeira.pontol.ui.theme.Azul1
 import com.dieyteixeira.pontol.ui.theme.Azul2
 import com.dieyteixeira.pontol.ui.theme.AzulDegrade
+import com.dieyteixeira.pontol.ui.theme.Laranja
 import com.dieyteixeira.pontol.ui.theme.Verde
+import com.dieyteixeira.pontol.ui.theme.Verde2
+import java.time.LocalDate
+import java.time.Duration
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InsertScreen() {
+fun InsertScreen(
+    customFontFamily: List<FontFamily>? = null
+) {
 
-    val context = LocalContext.current
-
-    val isInPreview = LocalInspectionMode.current
-    val customFontFamily = if (isInPreview) {
-        FontFamily.Default
-    } else {
-        FontFamily(Font(R.font.font_aller))
-    }
-
-    var selectedDay by remember { mutableStateOf(24) }
-    var selectedMonth by remember { mutableStateOf(9) }
-    var selectedYear by remember { mutableStateOf(2024) }
+    val selectedDateNow = remember { mutableStateOf(LocalDate.now()) }
+    var selectedDay by remember { mutableStateOf(selectedDateNow.value.dayOfMonth) }
+    var selectedMonth by remember { mutableStateOf(selectedDateNow.value.monthValue) }
+    var selectedYear by remember { mutableStateOf(selectedDateNow.value.year) }
 
     var showCustomDatePicker by remember { mutableStateOf(false) }
 
     if (showCustomDatePicker) {
-        DatePickerPonto(
+        DatePickerCustom(
+            customFontFamily = customFontFamily,
             onDismissRequest = {
                 showCustomDatePicker = false
             },
@@ -99,6 +100,19 @@ fun InsertScreen() {
     var initialTimeP4 by remember { mutableStateOf("") }
     var finalTimeP4 by remember { mutableStateOf("") }
 
+    var initialMillisP1 by remember { mutableStateOf(0L) }
+    var finalMillisP1 by remember { mutableStateOf(0L) }
+    var calMillisP1 by remember { mutableStateOf(0L) }
+    var initialMillisP2 by remember { mutableStateOf(0L) }
+    var finalMillisP2 by remember { mutableStateOf(0L) }
+    var calMillisP2 by remember { mutableStateOf(0L) }
+    var initialMillisP3 by remember { mutableStateOf(0L) }
+    var finalMillisP3 by remember { mutableStateOf(0L) }
+    var calMillisP3 by remember { mutableStateOf(0L) }
+    var initialMillisP4 by remember { mutableStateOf(0L) }
+    var finalMillisP4 by remember { mutableStateOf(0L) }
+    var calMillisP4 by remember { mutableStateOf(0L) }
+
     val timePickerStateP1Initial = rememberTimePickerState(is24Hour = true)
     val timePickerStateP1Final = rememberTimePickerState(is24Hour = true)
     val timePickerStateP2Initial = rememberTimePickerState(is24Hour = true)
@@ -107,6 +121,15 @@ fun InsertScreen() {
     val timePickerStateP3Final = rememberTimePickerState(is24Hour = true)
     val timePickerStateP4Initial = rememberTimePickerState(is24Hour = true)
     val timePickerStateP4Final = rememberTimePickerState(is24Hour = true)
+
+    var sumMillisNormal by remember { mutableStateOf(0L) }
+    val (totalHoursN, totalMinutesN) = convertMillisToHoursAndMinutes(sumMillisNormal)
+
+    var sumMillisExtra by remember { mutableStateOf(0L) }
+    val (totalHoursE, totalMinutesE) = convertMillisToHoursAndMinutes(sumMillisExtra)
+
+    var sumMillisTotal by remember { mutableStateOf(0L) }
+    val (totalHoursT, totalMinutesT) = convertMillisToHoursAndMinutes(sumMillisTotal)
 
     var currentPicker by remember { mutableStateOf<Pair<Int, Boolean>?>(null) }
 
@@ -120,7 +143,8 @@ fun InsertScreen() {
             else -> timePickerStateP1Initial
         }
 
-        TimePickerPonto(
+        TimePickerCustom(
+            customFontFamily = customFontFamily,
             timeState = timePickerState,
             onDismissRequest = { currentPicker = null },
             onCancelClick = { currentPicker = null },
@@ -133,8 +157,33 @@ fun InsertScreen() {
                     4 -> if (isInitial) initialTimeP4 = selectedTime else finalTimeP4 = selectedTime
                 }
                 currentPicker = null
+            },
+            onMiliClick = { milliseconds ->
+                val selectedMillis = milliseconds
+                when (periodo) {
+                    1 -> if (isInitial) initialMillisP1 = selectedMillis else finalMillisP1 = selectedMillis
+                    2 -> if (isInitial) initialMillisP2 = selectedMillis else finalMillisP2 = selectedMillis
+                    3 -> if (isInitial) initialMillisP3 = selectedMillis else finalMillisP3 = selectedMillis
+                    4 -> if (isInitial) initialMillisP4 = selectedMillis else finalMillisP4 = selectedMillis
+                }
             }
         )
+    }
+
+    fun updateTotalMillis() {
+        calMillisP1 =  finalMillisP1 - initialMillisP1
+        calMillisP2 =  finalMillisP2 - initialMillisP2
+        calMillisP3 =  finalMillisP3 - initialMillisP3
+        calMillisP4 =  finalMillisP4 - initialMillisP4
+
+        sumMillisNormal = calMillisP1 + calMillisP2
+        sumMillisExtra = calMillisP3 + calMillisP4
+        sumMillisTotal = sumMillisNormal + sumMillisExtra
+    }
+
+    // Atualiza o total sempre que timeMillis muda
+    LaunchedEffect(finalMillisP1, finalMillisP2, finalMillisP3, finalMillisP4) {
+        updateTotalMillis()
     }
 
     Column(
@@ -144,7 +193,7 @@ fun InsertScreen() {
                 color = Color.White.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(15.dp)
             )
-            .padding(15.dp, 8.dp, 15.dp, 15.dp)
+            .padding(15.dp)
     ) {
         Row(
             modifier = Modifier
@@ -179,9 +228,10 @@ fun InsertScreen() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = selectedYear.toString(),
+                            text = "$selectedYear",
                             fontSize = 14.sp,
-                            fontFamily = customFontFamily,
+                            fontFamily = customFontFamily?.get(2),
+                            fontWeight = FontWeight.Bold,
                             color = Color.White,
                             modifier = Modifier
                                 .padding(vertical = 1.dp, horizontal = 13.dp)
@@ -193,15 +243,17 @@ fun InsertScreen() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = selectedDay.toString(),
+                            text = if (selectedDay < 10) "0$selectedDay" else "$selectedDay",
                             fontSize = 38.sp,
-                            fontFamily = customFontFamily,
+                            fontFamily = customFontFamily?.get(2),
+                            fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
                             text = getMonthAbbreviation(selectedMonth),
                             fontSize = 25.sp,
-                            fontFamily = customFontFamily,
+                            fontFamily = customFontFamily?.get(2),
+                            fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                     }
@@ -234,7 +286,7 @@ fun InsertScreen() {
                     Text(
                         text = "Horas Trabalhadas",
                         fontSize = 14.sp,
-                        fontFamily = customFontFamily,
+                        fontFamily = customFontFamily?.get(1),
                         color = Azul1
                     )
                     Row(
@@ -243,15 +295,15 @@ fun InsertScreen() {
                         verticalAlignment = Alignment.Bottom
                     ) {
                         Text(
-                            text = "+00h",
+                            text = if (totalHoursT < 10) "+0${totalHoursT}h" else "+${totalHoursT}h",
                             fontSize = 38.sp,
-                            fontFamily = customFontFamily,
+                            fontFamily = customFontFamily?.get(2),
                             color = Color.White
                         )
                         Text(
-                            text = "00min",
+                            text = if (totalMinutesT < 10) "0${totalMinutesT}min" else "${totalMinutesT}min",
                             fontSize = 23.sp,
-                            fontFamily = customFontFamily,
+                            fontFamily = customFontFamily?.get(2),
                             color = Color.White,
                             modifier = Modifier
                                 .padding(bottom = 2.5.dp)
@@ -265,45 +317,71 @@ fun InsertScreen() {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = Color.White,
+                                    color = Azul2,
                                     shape = RoundedCornerShape(100)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "8h48min",
-                                fontSize = 14.sp,
-                                fontFamily = customFontFamily,
-                                color = Azul1,
+                            Row(
                                 modifier = Modifier
                                     .padding(horizontal = 5.dp)
-                            )
+                            ) {
+                                Text(
+                                    text = if (totalHoursN < 10) "0${totalHoursN}h" else "${totalHoursN}h",
+                                    fontSize = 14.sp,
+                                    fontFamily = customFontFamily?.get(1),
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = if (totalMinutesN < 10) "0${totalMinutesN}min" else "${totalMinutesN}min",
+                                    fontSize = 14.sp,
+                                    fontFamily = customFontFamily?.get(1),
+                                    color = Color.White
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.width(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = Color.White,
+                                    color = Verde2,
                                     shape = RoundedCornerShape(100)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "1h47min",
-                                fontSize = 14.sp,
-                                fontFamily = customFontFamily,
-                                color = Verde,
+                            Row(
                                 modifier = Modifier
                                     .padding(horizontal = 5.dp)
-                            )
+                            ) {
+                                Text(
+                                    text = if (totalHoursE < 10) "0${totalHoursE}h" else "${totalHoursE}h",
+                                    fontSize = 14.sp,
+                                    fontFamily = customFontFamily?.get(1),
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = if (totalMinutesE < 10) "0${totalMinutesE}min" else "${totalMinutesE}min",
+                                    fontSize = 14.sp,
+                                    fontFamily = customFontFamily?.get(1),
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        Divider(
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+        )
         Spacer(modifier = Modifier.height(25.dp))
         // Campos para Período 1
         PeriodTime(
+            customFontFamily = customFontFamily,
             text = "MANHÃ",
             initialTime = initialTimeP1,
             finalTime = finalTimeP1,
@@ -313,6 +391,7 @@ fun InsertScreen() {
         Spacer(modifier = Modifier.height(20.dp))
         // Campos para Período 2
         PeriodTime(
+            customFontFamily = customFontFamily,
             text = "TARDE",
             initialTime = initialTimeP2,
             finalTime = finalTimeP2,
@@ -322,6 +401,7 @@ fun InsertScreen() {
         Spacer(modifier = Modifier.height(20.dp))
         // Campos para Período 3
         PeriodTime(
+            customFontFamily = customFontFamily,
             text = "EXTRA",
             initialTime = initialTimeP3,
             finalTime = finalTimeP3,
@@ -331,6 +411,7 @@ fun InsertScreen() {
         Spacer(modifier = Modifier.height(20.dp))
         // Campos para Período 4
         PeriodTime(
+            customFontFamily = customFontFamily,
             text = "EXTRA",
             initialTime = initialTimeP4,
             finalTime = finalTimeP4,
@@ -357,6 +438,12 @@ fun getMonthAbbreviation(month: Int): String {
         12 -> "dez"
         else -> ""
     }
+}
+
+fun convertMillisToHoursAndMinutes(totalMillis: Long): Pair<Int, Int> {
+    val hours = (totalMillis / 1000) / 3600 // 1 hora = 3600 segundos = 3.600.000 milissegundos
+    val minutes = ((totalMillis / 1000) % 3600) / 60 // Resto da divisão por 3600 para obter os minutos
+    return Pair(hours.toInt(), minutes.toInt())
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

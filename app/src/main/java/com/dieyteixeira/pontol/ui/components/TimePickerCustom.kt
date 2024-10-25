@@ -3,6 +3,7 @@ package com.dieyteixeira.pontol.ui.components
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerColors
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -37,19 +39,14 @@ import com.dieyteixeira.pontol.ui.theme.Azul1
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerPonto(
+fun TimePickerCustom(
+    customFontFamily: List<FontFamily>? = null,
     timeState: TimePickerState,
     onDismissRequest: () -> Unit,
     onCancelClick: () -> Unit,
-    onOKClick: () -> Unit
+    onOKClick: () -> Unit,
+    onMiliClick: (Long) -> Unit = {}
 ) {
-
-    val isInPreview = LocalInspectionMode.current
-    val customFontFamily = if (isInPreview) {
-        FontFamily.Default
-    } else {
-        FontFamily(Font(R.font.font_aller))
-    }
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -72,7 +69,7 @@ fun TimePickerPonto(
                         .fillMaxWidth()
                         .padding(16.dp),
                     text = "Selecione o horário",
-                    fontFamily = customFontFamily,
+                    fontFamily = customFontFamily?.get(2)
                 )
 
                 TimePicker(
@@ -94,7 +91,7 @@ fun TimePickerPonto(
                         Text(
                             text = "Cancel",
                             color = Azul1,
-                            fontFamily = customFontFamily
+                            fontFamily = customFontFamily?.get(2)
                         )
                     }
 
@@ -102,17 +99,28 @@ fun TimePickerPonto(
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .height(35.dp),
-                        onClick = onOKClick
+                        onClick = {
+                            val hour = timeState.hour
+                            val minute = timeState.minute
+                            val milliseconds = convertToMilliseconds(hour, minute)
+                            onMiliClick(milliseconds)
+                            onOKClick()
+                        }
                     ) {
                         Text(
                             text = "OK",
-                            fontFamily = customFontFamily
+                            fontFamily = customFontFamily?.get(2)
                         )
                     }
                 }
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun convertToMilliseconds(hour: Int, minute: Int): Long {
+    return (hour * 3600 + minute * 60) * 1000L
 }
 
 @SuppressLint("DefaultLocale")
@@ -126,7 +134,8 @@ fun formattedTime(hour: Int, minute: Int): String {
 @Preview
 @Composable
 private fun TimePickerDialogPreview() {
-    TimePickerPonto(
+    TimePickerCustom(
+        customFontFamily = null,
         timeState = rememberTimePickerState(
             initialHour = 5,
             initialMinute = 35

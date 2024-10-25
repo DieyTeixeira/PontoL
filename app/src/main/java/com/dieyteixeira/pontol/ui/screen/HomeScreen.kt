@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +52,9 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    customFontFamily: List<FontFamily>? = null
+) {
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { HomeTabs.entries.size })
@@ -122,6 +125,7 @@ fun HomeScreen() {
                                 style = TextStyle.Default.copy(
                                     fontSize = 10.sp
                                 ),
+                                fontFamily = customFontFamily?.get(0),
                                 modifier = Modifier.padding(top = 0.dp) // Remove o espaçamento
                             )
                         }
@@ -145,11 +149,22 @@ fun HomeScreen() {
                             .fillMaxHeight(0.9f)
                             .padding(15.dp)
                     ) {
-                        InsertScreen()
+                        ListScreen(
+                            customFontFamily = customFontFamily
+                        )
                     }
                 }
                 1 -> {
-
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.9f)
+                            .padding(15.dp)
+                    ) {
+                        InsertScreen(
+                            customFontFamily = customFontFamily
+                        )
+                    }
                 }
                 2 -> {
 
@@ -165,15 +180,15 @@ enum class HomeTabs(
     val unselectedIcon: ImageVector,
     val text: String = ""
 ) {
-    Insert(
-        unselectedIcon = Icons.Outlined.DateRange,
-        selectedIcon = Icons.Filled.DateRange,
-        text = "Lançamentos"
-    ),
     List(
         unselectedIcon = Icons.Outlined.Analytics,
         selectedIcon = Icons.Filled.Analytics,
         text = "Relatório"
+    ),
+    Insert(
+        unselectedIcon = Icons.Outlined.DateRange,
+        selectedIcon = Icons.Filled.DateRange,
+        text = "Lançamentos"
     ),
     Settings(
         unselectedIcon = Icons.Outlined.Settings,

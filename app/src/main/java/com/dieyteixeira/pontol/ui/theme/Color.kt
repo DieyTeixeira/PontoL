@@ -18,7 +18,9 @@ val Azul4 = Color(0xFF40C4FB)
 
 val Vermelho = Color(0xFFB00020)
 val Amarelo = Color(0xFFFFD600)
-val Verde = Color(0xFF25D366)
+val Laranja = Color(0xFFEC9200)
+val Verde = Color(0xFF239443)
+val Verde2 = Color(0xFF00B636)
 
 val AzulDegrade = Brush.verticalGradient(
     colors = listOf(Azul4, Azul3, Azul2)
