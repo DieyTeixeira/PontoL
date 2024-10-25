@@ -2,7 +2,6 @@ package com.dieyteixeira.pontol.ui.screen
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,13 +46,9 @@ import com.dieyteixeira.pontol.ui.components.formattedTime
 import com.dieyteixeira.pontol.ui.theme.Azul1
 import com.dieyteixeira.pontol.ui.theme.Azul2
 import com.dieyteixeira.pontol.ui.theme.AzulDegrade
-import com.dieyteixeira.pontol.ui.theme.Laranja
-import com.dieyteixeira.pontol.ui.theme.Verde
 import com.dieyteixeira.pontol.ui.theme.Verde2
+import com.dieyteixeira.pontol.ui.viewmodel.TimeViewModel
 import java.time.LocalDate
-import java.time.Duration
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -60,6 +56,8 @@ import java.time.format.DateTimeFormatter
 fun InsertScreen(
     customFontFamily: List<FontFamily>? = null
 ) {
+
+    val timeViewModel = remember { TimeViewModel() }
 
     val selectedDateNow = remember { mutableStateOf(LocalDate.now()) }
     var selectedDay by remember { mutableStateOf(selectedDateNow.value.dayOfMonth) }
@@ -78,6 +76,7 @@ fun InsertScreen(
                 showCustomDatePicker = false
             },
             onOKClick = { selectedDate ->
+                val dateSet = selectedDate.toString()
                 val year = selectedDate.year
                 val month = selectedDate.monthValue
                 val day = selectedDate.dayOfMonth
@@ -124,12 +123,15 @@ fun InsertScreen(
 
     var sumMillisNormal by remember { mutableStateOf(0L) }
     val (totalHoursN, totalMinutesN) = convertMillisToHoursAndMinutes(sumMillisNormal)
+    val totalNormal = convertMillisToTime(sumMillisNormal)
 
     var sumMillisExtra by remember { mutableStateOf(0L) }
     val (totalHoursE, totalMinutesE) = convertMillisToHoursAndMinutes(sumMillisExtra)
+    val totalExtra = convertMillisToTime(sumMillisExtra)
 
     var sumMillisTotal by remember { mutableStateOf(0L) }
     val (totalHoursT, totalMinutesT) = convertMillisToHoursAndMinutes(sumMillisTotal)
+    val totalTime = convertMillisToTime(sumMillisTotal)
 
     var currentPicker by remember { mutableStateOf<Pair<Int, Boolean>?>(null) }
 
@@ -418,6 +420,12 @@ fun InsertScreen(
             onInitialTimeClick = { currentPicker = Pair(4, true) },
             onFinalTimeClick = { currentPicker = Pair(4, false) }
         )
+        Spacer(modifier = Modifier.height(20.dp))
+        Button(onClick = {
+            timeViewModel.saveTimeValue()
+        }) {
+            Text("Salvar Dados")
+        }
     }
 }
 
@@ -444,6 +452,13 @@ fun convertMillisToHoursAndMinutes(totalMillis: Long): Pair<Int, Int> {
     val hours = (totalMillis / 1000) / 3600 // 1 hora = 3600 segundos = 3.600.000 milissegundos
     val minutes = ((totalMillis / 1000) % 3600) / 60 // Resto da divisão por 3600 para obter os minutos
     return Pair(hours.toInt(), minutes.toInt())
+}
+
+@SuppressLint("DefaultLocale")
+fun convertMillisToTime(totalMillis: Long): String {
+    val hours = (totalMillis / 1000) / 3600 // 1 hora = 3600 segundos = 3.600.000 milissegundos
+    val minutes = ((totalMillis / 1000) % 3600) / 60 // Resto da divisão por 3600 para obter os minutos
+    return String.format("%02dh %02dmin", hours, minutes)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
