@@ -1,6 +1,6 @@
 [versions]
 agp = "8.8.0-alpha07"
-firebaseBom = "33.5.0"
+firebaseBom = "33.5.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -9,14 +9,21 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.3"
 composeBom = "2024.10.00"
+lifecycleViewmodelCompose = "2.8.6"
 materialIconsExtended = "1.7.4"
-uiTextGoogleFonts = "1.7.4"
 material = "1.12.0"
-firebaseDatabaseKtx = "21.0.0"
 firebaseFirestoreKtx = "25.1.1"
+appcompatVersion = "1.7.0"
+coilCompose = "2.7.0"
+extensionMediasession = "2.19.1"
+koinAndroid = "4.0.0"
+navigation-compose = "2.8.3"
+room = "2.6.1"
+constraintlayoutCompose = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,10 +40,25 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+androidx-appcompat-v170 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "extensionMediasession" }
+exoplayer-core = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "extensionMediasession" }
+exoplayer-dash = { module = "com.google.android.exoplayer:exoplayer-dash", version.ref = "extensionMediasession" }
+exoplayer-hls = { module = "com.google.android.exoplayer:exoplayer-hls", version.ref = "extensionMediasession" }
+exoplayer-smoothstreaming = { module = "com.google.android.exoplayer:exoplayer-smoothstreaming", version.ref = "extensionMediasession" }
+exoplayer-ui = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "extensionMediasession" }
+extension-mediasession = { module = "com.google.android.exoplayer:extension-mediasession", version.ref = "extensionMediasession" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroid" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

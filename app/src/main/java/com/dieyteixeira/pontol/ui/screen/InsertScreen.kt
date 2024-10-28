@@ -2,6 +2,7 @@ package com.dieyteixeira.pontol.ui.screen
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +37,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.pontol.ui.components.DatePickerCustom
@@ -45,45 +45,32 @@ import com.dieyteixeira.pontol.ui.components.TimePickerCustom
 import com.dieyteixeira.pontol.ui.components.formattedTime
 import com.dieyteixeira.pontol.ui.theme.Azul1
 import com.dieyteixeira.pontol.ui.theme.Azul2
-import com.dieyteixeira.pontol.ui.theme.AzulDegrade
 import com.dieyteixeira.pontol.ui.theme.Verde2
-import com.dieyteixeira.pontol.ui.viewmodel.PontoViewModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InsertScreen(
-    customFontFamily: List<FontFamily>? = null,
-    pontoViewModel: PontoViewModel
+    customFontFamily: List<FontFamily>? = null
 ) {
 
-    val selectedDateNow = remember { mutableStateOf(LocalDate.now()) }
-    var selectedDay by remember { mutableStateOf(selectedDateNow.value.dayOfMonth) }
-    var selectedMonth by remember { mutableStateOf(selectedDateNow.value.monthValue) }
-    var selectedYear by remember { mutableStateOf(selectedDateNow.value.year) }
+    var selectedDay by remember { mutableStateOf(LocalDate.now().dayOfMonth) }
+    var selectedMonth by remember { mutableStateOf(LocalDate.now().monthValue) }
+    var selectedYear by remember { mutableStateOf(LocalDate.now().year) }
 
     var showCustomDatePicker by remember { mutableStateOf(false) }
+    var valueDate by remember { mutableStateOf(false) }
 
     if (showCustomDatePicker) {
         DatePickerCustom(
             customFontFamily = customFontFamily,
-            onDismissRequest = {
-                showCustomDatePicker = false
-            },
-            onCancelClick = {
-                showCustomDatePicker = false
-            },
+            onDismissRequest = { showCustomDatePicker = false },
+            onCancelClick = { showCustomDatePicker = false },
             onOKClick = { selectedDate ->
-                val dateSet = selectedDate.toString()
-                val year = selectedDate.year
-                val month = selectedDate.monthValue
-                val day = selectedDate.dayOfMonth
-
-                selectedDay = day
-                selectedMonth = month
-                selectedYear = year
-
+                selectedDay = selectedDate.dayOfMonth
+                selectedMonth = selectedDate.monthValue
+                selectedYear = selectedDate.year
                 showCustomDatePicker = false
             }
         )
@@ -182,7 +169,6 @@ fun InsertScreen(
         sumMillisTotal = sumMillisNormal + sumMillisExtra
     }
 
-    // Atualiza o total sempre que timeMillis muda
     LaunchedEffect(finalMillisP1, finalMillisP2, finalMillisP3, finalMillisP4) {
         updateTotalMillis()
     }
@@ -421,20 +407,7 @@ fun InsertScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = {
-            pontoViewModel.updateRegistro(
-                dataRegistro = "$selectedDay/$selectedMonth/$selectedYear",
-                horaInicialP1 = initialTimeP1,
-                horaFinalP1 = finalTimeP1,
-                horaInicialP2 = initialTimeP2,
-                horaFinalP2 = finalTimeP2,
-                horaInicialP3 = initialTimeP3,
-                horaFinalP3 = finalTimeP3,
-                horaInicialP4 = initialTimeP4,
-                horaFinalP4 = finalTimeP4,
-                horaNormal = totalNormal,
-                horaExtra = totalExtra,
-                horaTotal = totalTime
-            )
+
         }) {
             Text("Salvar Dados")
         }
@@ -472,18 +445,3 @@ fun convertMillisToTime(totalMillis: Long): String {
     val minutes = ((totalMillis / 1000) % 3600) / 60 // Resto da divisão por 3600 para obter os minutos
     return String.format("%02dh %02dmin", hours, minutes)
 }
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview
-//@Composable
-//private fun Screen1Preview() {
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(AzulDegrade)
-//    ) {
-//        InsertScreen(
-//            customFontFamily = null
-//        )
-//    }
-//}

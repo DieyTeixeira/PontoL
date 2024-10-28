@@ -73,15 +73,15 @@ fun ListScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-private fun Screen1Preview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AzulDegrade)
-    ) {
-        InsertScreen()
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview
+//@Composable
+//private fun Screen1Preview() {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(AzulDegrade)
+//    ) {
+//        InsertScreen()
+//    }
+//}
