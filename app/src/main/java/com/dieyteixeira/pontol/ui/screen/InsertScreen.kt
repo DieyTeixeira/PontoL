@@ -47,17 +47,16 @@ import com.dieyteixeira.pontol.ui.theme.Azul1
 import com.dieyteixeira.pontol.ui.theme.Azul2
 import com.dieyteixeira.pontol.ui.theme.AzulDegrade
 import com.dieyteixeira.pontol.ui.theme.Verde2
-import com.dieyteixeira.pontol.ui.viewmodel.TimeViewModel
+import com.dieyteixeira.pontol.ui.viewmodel.PontoViewModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InsertScreen(
-    customFontFamily: List<FontFamily>? = null
+    customFontFamily: List<FontFamily>? = null,
+    pontoViewModel: PontoViewModel
 ) {
-
-    val timeViewModel = remember { TimeViewModel() }
 
     val selectedDateNow = remember { mutableStateOf(LocalDate.now()) }
     var selectedDay by remember { mutableStateOf(selectedDateNow.value.dayOfMonth) }
@@ -422,7 +421,20 @@ fun InsertScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = {
-            timeViewModel.saveTimeValue()
+            pontoViewModel.updateRegistro(
+                dataRegistro = "$selectedDay/$selectedMonth/$selectedYear",
+                horaInicialP1 = initialTimeP1,
+                horaFinalP1 = finalTimeP1,
+                horaInicialP2 = initialTimeP2,
+                horaFinalP2 = finalTimeP2,
+                horaInicialP3 = initialTimeP3,
+                horaFinalP3 = finalTimeP3,
+                horaInicialP4 = initialTimeP4,
+                horaFinalP4 = finalTimeP4,
+                horaNormal = totalNormal,
+                horaExtra = totalExtra,
+                horaTotal = totalTime
+            )
         }) {
             Text("Salvar Dados")
         }
@@ -461,15 +473,17 @@ fun convertMillisToTime(totalMillis: Long): String {
     return String.format("%02dh %02dmin", hours, minutes)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-private fun Screen1Preview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AzulDegrade)
-    ) {
-        InsertScreen()
-    }
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview
+//@Composable
+//private fun Screen1Preview() {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(AzulDegrade)
+//    ) {
+//        InsertScreen(
+//            customFontFamily = null
+//        )
+//    }
+//}
